@@ -1,0 +1,84 @@
+name: rate-limiter
+
+
+services:
+
+
+  app:
+
+    build: .
+
+    container_name: rate-limiter-api
+
+
+    ports:
+
+      - "3000:3000"
+
+
+    env_file:
+
+      - .env
+
+
+    depends_on:
+
+      - redis
+
+
+    restart: always
+
+
+    networks:
+
+      - rate-limiter-network
+
+
+
+
+
+
+  redis:
+
+    image: redis:latest
+
+    container_name: redis-server
+
+
+    ports:
+
+      - "6379:6379"
+
+
+    volumes:
+
+      - redis-data:/data
+
+
+    restart: always
+
+
+    networks:
+
+      - rate-limiter-network
+
+
+
+
+
+
+volumes:
+
+
+  redis-data:
+
+
+
+
+
+networks:
+
+
+  rate-limiter-network:
+
+    driver: bridge

@@ -1,0 +1,13 @@
+node_modules
+
+.env
+
+.git
+
+logs
+
+coverage
+
+npm-debug.log*
+
+Thumbs.db
