@@ -11,7 +11,7 @@ const connectDB = require("./src/config/db");
 
 // Use environment PORT or fallback for local development
 
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 3001;
 
 
 
