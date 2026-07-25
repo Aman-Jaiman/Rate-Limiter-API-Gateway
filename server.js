@@ -26,7 +26,6 @@ const startServer = async () => {
         await connectDB();
 
 
-
         // Connect Redis before accepting requests
 
         await redisClient.connect();
