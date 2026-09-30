@@ -220,6 +220,40 @@ async (req, res, next) => {
 
 
 
+        res.set(
+            "X-RateLimit-Limit",
+            result.limit || req.user.limit
+        );
+
+        if(result.remaining !== undefined){
+
+            res.set(
+                "X-RateLimit-Remaining",
+                result.remaining
+            );
+
+        }
+
+        if(
+            ["fixed", "sliding-log", "sliding-window"].includes(algorithm)
+        ){
+
+            res.set(
+                "X-RateLimit-Window",
+                config.window
+            );
+
+        }
+
+        if(result.retryAfter > 0){
+
+            res.set(
+                "Retry-After",
+                result.retryAfter
+            );
+
+        }
+
         // Store analytics and reject request when limit exceeds
 
         if(!result.allowed){

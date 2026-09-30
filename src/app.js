@@ -22,6 +22,15 @@ require("./middleware/errorHandler");
 
 const app = express();
 
+const configuredOrigins = (process.env.FRONTEND_URL || "")
+    .split(",")
+    .map((origin) => origin.trim())
+    .filter(Boolean);
+
+const isLocalDevelopmentOrigin = (origin) =>
+    process.env.NODE_ENV !== "production" &&
+    /^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/.test(origin);
+
 
 
 // Add basic security headers
@@ -35,7 +44,25 @@ app.use(
 // Allow frontend applications to access API
 
 app.use(
-    cors()
+    cors({
+        origin: (origin, callback) => {
+            if (
+                !origin ||
+                configuredOrigins.includes(origin) ||
+                isLocalDevelopmentOrigin(origin)
+            ) {
+                return callback(null, true);
+            }
+
+            return callback(new Error("Origin is not allowed by CORS"));
+        },
+        exposedHeaders: [
+            "Retry-After",
+            "X-RateLimit-Limit",
+            "X-RateLimit-Remaining",
+            "X-RateLimit-Window"
+        ]
+    })
 );
 
 
@@ -52,6 +79,17 @@ app.use(
 
 app.use(
     logger
+);
+
+
+// Lightweight health check for deployment platforms
+app.get(
+    "/health",
+    (req, res) => {
+        res.json({
+            status: "ok"
+        });
+    }
 );
 
 

@@ -1,0 +1,49 @@
+services:
+  - type: keyvalue
+    name: rate-limiter-redis
+    region: oregon
+    plan: free
+    ipAllowList: []
+    maxmemoryPolicy: allkeys-lru
+    persistenceMode: off
+
+  - type: web
+    name: rate-limiter-api
+    runtime: node
+    region: oregon
+    plan: free
+    buildCommand: npm ci
+    startCommand: npm start
+    healthCheckPath: /health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: MONGO_URI
+        sync: false
+      - key: REDIS_URL
+        fromService:
+          type: keyvalue
+          name: rate-limiter-redis
+          property: connectionString
+      - key: FRONTEND_URL
+        sync: false
+      - key: RATE_LIMIT_ALGORITHM
+        value: fixed
+      - key: RATE_LIMIT_WINDOW
+        value: "60"
+      - key: TOKEN_BUCKET_REFILL_RATE
+        value: "1"
+      - key: LEAKY_BUCKET_RATE
+        value: "1"
+
+  - type: web
+    name: rate-limiter-frontend
+    runtime: static
+    buildCommand: npm --prefix frontend ci && npm --prefix frontend run build
+    staticPublishPath: frontend/dist
+    envVars:
+      - key: VITE_API_URL
+        fromService:
+          type: web
+          name: rate-limiter-api
+          envVarKey: RENDER_EXTERNAL_URL

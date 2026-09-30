@@ -8,32 +8,17 @@ const {
 
 
 
-// Create Redis client connection
+// Prefer a complete URL for managed Redis-compatible services.
+const redisOptions = process.env.REDIS_URL
+    ? { url: process.env.REDIS_URL }
+    : {
+        socket: {
+            host: process.env.REDIS_HOST || "localhost",
+            port: Number(process.env.REDIS_PORT) || 6379
+        }
+    };
 
-const redisClient =
-createClient({
-
-
-    socket: {
-
-
-        host:
-        process.env.REDIS_HOST
-        ||
-        "localhost",
-
-
-
-        port:
-        process.env.REDIS_PORT
-        ||
-        6379
-
-
-    }
-
-
-});
+const redisClient = createClient(redisOptions);
 
 
 

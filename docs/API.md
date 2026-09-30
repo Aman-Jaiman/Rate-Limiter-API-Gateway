@@ -4,12 +4,31 @@
 Base URL
 
 ```text
-http://localhost:3000/api
+http://localhost:3001/api
 ```
 
+The health endpoints are mounted at the API origin, outside the `/api` prefix.
 
 
-## Health Check
+## Health Checks
+
+### Deployment health
+
+```http
+GET /health
+```
+
+Response:
+
+```json
+{
+    "status": "ok"
+}
+```
+
+This handler is lightweight and does not query MongoDB or Redis.
+
+### Existing root status
 
 Check if server is running.
 
@@ -29,10 +48,6 @@ GET /
     "message": "Rate Limiter API Running"
 }
 ```
-
-
-
-
 
 # API Key Management
 
@@ -228,6 +243,14 @@ Response:
     "message": "Too Many Requests"
 }
 ```
+
+`algorithm` reflects `RATE_LIMIT_ALGORITHM`; `fixed` is the default/example value.
+
+### Rate Limit Headers
+
+The middleware returns `X-RateLimit-Limit` and `X-RateLimit-Remaining` when the selected algorithm provides those values. It returns `X-RateLimit-Window` for `fixed`, `sliding-log`, and `sliding-window`. `Retry-After` is conditional: it is sent only when the algorithm returns a positive retry value. Token and leaky bucket do not currently provide one.
+
+These headers are exposed through CORS for the configured frontend origin.
 
 
 

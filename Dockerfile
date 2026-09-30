@@ -38,7 +38,7 @@ ENV NODE_ENV=production
 
 # Expose application port
 
-EXPOSE 3000
+EXPOSE 3001
 
 
 

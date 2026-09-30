@@ -9,8 +9,7 @@ const connectDB = require("./src/config/db");
 
 
 
-// Use environment PORT or fallback for local development
-
+// Render supplies PORT; the fallback is for local development.
 const PORT = process.env.PORT || 3001;
 
 
@@ -35,6 +34,7 @@ const startServer = async () => {
 
         app.listen(
             PORT,
+            "0.0.0.0",
             () => {
 
                 console.log(
